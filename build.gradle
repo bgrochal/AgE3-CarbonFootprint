@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 16 Intelligent Information Systems Group.
+ *
+ * This file is part of AgE.
+ *
+ * AgE is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AgE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AgE.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+plugins {
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+mainClassName = 'pl.edu.agh.age.node.NodeBootstrapper'
+applicationDefaultJvmArgs = [
+        '-enableassertions'
+]
+
+dependencies {
+    compile project(':age3-core')
+    compile project(':age3-stream-agents')
+}
+
+shadowJar {
+    // Required for merging spring handler definitions (e.g. from Hazelcast)
+    mergeServiceFiles('META-INF/spring.*')
+}
+
+// Use ProcessBuilder to have a correct tty on Linux
+task(shell, dependsOn: 'classes') << {
+    def classpath = sourceSets.main.runtimeClasspath
+    def command = [
+            'java',
+            '-cp', classpath.collect().join(java.io.File.pathSeparator),
+            'pl.edu.agh.age.console.ConsoleBootstrapper'
+    ]
+    if (project.hasProperty('appArgs')) {
+        command.addAll(Eval.me(appArgs))
+    }
+
+    def proc = new ProcessBuilder(command)
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectInput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .start()
+    proc.waitFor()
+}
+
+task node(type: JavaExec) {
+    main = 'pl.edu.agh.age.node.NodeBootstrapper'
+    classpath = sourceSets.main.runtimeClasspath
+    standardOutput = System.out
+    standardInput = System.in
+    jvmArgs '-enableassertions'
+    if (project.hasProperty('appArgs')) {
+        args Eval.me(appArgs)
+    }
+}
