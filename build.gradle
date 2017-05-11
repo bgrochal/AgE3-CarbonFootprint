@@ -32,6 +32,7 @@ dependencies {
     compile project(':age3-stream-agents')
 
 	compile 'org.dom4j:dom4j:2.0.0'
+	compile 'uk.com.robust-it:cloning:1.9.3'
 }
 
 shadowJar {

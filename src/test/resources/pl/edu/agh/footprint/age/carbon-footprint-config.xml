@@ -18,11 +18,25 @@
 	<!-- Property placeholder -->
 	<context:property-placeholder location="classpath:pl/edu/agh/footprint/age/carbon-footprint-config.properties"/>
 
-	<!-- Carbon Footprint beans -->
+	<!-- Problem definition -->
+	<bean id="problemDefinition" class="pl.edu.agh.footprint.age.problem.CarbonFootprintProblem">
+		<constructor-arg name="filePath" value="${footprint.problem.input-file}"/>
+	</bean>
+
+	<bean id="stopCondition" class="pl.edu.agh.age.compute.stream.TimedStopCondition">
+		<constructor-arg value="${footprint.problem.stop-condition-in-seconds}" type="long"/>
+	</bean>
+
+	<bean id="loggingInterval" class="java.time.Duration" factory-method="ofMillis">
+		<constructor-arg value="${footprint.problem.logging-interval-in-ms}"/>
+	</bean>
+
+
+	<!-- Problem-specific beans -->
 	<bean id="methodsContainer" class="pl.edu.agh.footprint.tree.methods.container.TestProblemMethodsContainer"/>
 	<bean id="parameterFactory" class="pl.edu.agh.footprint.tree.factory.ParameterFactory"/>
 	<bean id="footprintTreeProvider" class="pl.edu.agh.footprint.tree.provider.FootprintTreeProvider">
-		<constructor-arg name="filePath" value="${footprint.input-file}"/>
+		<constructor-arg name="problemDefinition" ref="problemDefinition"/>
 		<constructor-arg name="methodsContainer" ref="methodsContainer"/>
 		<constructor-arg name="parameterFactory" ref="parameterFactory"/>
 	</bean>

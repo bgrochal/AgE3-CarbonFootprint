@@ -1,7 +1,10 @@
 package pl.edu.agh.footprint.tree.provider;
 
+import com.google.common.base.Preconditions;
 import org.dom4j.Document;
 import org.dom4j.Node;
+import pl.edu.agh.age.compute.stream.problem.ProblemDefinition;
+import pl.edu.agh.footprint.age.problem.CarbonFootprintProblem;
 import pl.edu.agh.footprint.tree.builder.ActionBuilder;
 import pl.edu.agh.footprint.tree.builder.FootprintTreeBuilder;
 import pl.edu.agh.footprint.tree.factory.ParameterFactory;
@@ -25,24 +28,29 @@ import static pl.edu.agh.footprint.tree.provider.FootprintTreeTag.*;
  */
 public class FootprintTreeProvider {
 
-	private final String filePath;
+	private final ProblemDefinition problemDefinition;
 	private final MethodsContainer methodsContainer;
 	private final ParameterFactory parameterFactory;
 
 
-	public FootprintTreeProvider(String filePath, MethodsContainer methodsContainer, ParameterFactory parameterFactory) {
-		this.filePath = filePath;
+	public FootprintTreeProvider(ProblemDefinition problemDefinition, MethodsContainer methodsContainer,
+								 ParameterFactory parameterFactory) {
+		Preconditions.checkState(problemDefinition instanceof CarbonFootprintProblem);
+		this.problemDefinition = problemDefinition;
 		this.methodsContainer = methodsContainer;
 		this.parameterFactory = parameterFactory;
 	}
 
 
 	/**
-	 * Returns an instance of {@link FootprintTree} read from the XML file supplied with given {@link #filePath}.
+	 * Returns an instance of the {@link FootprintTree} read from the XML file supplied with given {@link
+	 * CarbonFootprintProblem#filePath}.
 	 */
 	public FootprintTree getFootprintTree() {
+		final String filePath = ((CarbonFootprintProblem) problemDefinition).getFilePath();
 		Document xmlDocument = XMLFileParser.parseXMLFile(FileReader.readFile(filePath));
 		FootprintTreeBuilder treeBuilder = visitTree(xmlDocument);
+
 		return treeBuilder.build();
 	}
 
