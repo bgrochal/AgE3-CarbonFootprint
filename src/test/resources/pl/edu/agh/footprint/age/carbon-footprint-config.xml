@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="
+	       http://www.springframework.org/schema/beans
+	       http://www.springframework.org/schema/beans/spring-beans.xsd
+		   http://www.springframework.org/schema/util
+		   http://www.springframework.org/schema/util/spring-util.xsd
+		   http://www.springframework.org/schema/context
+		   http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- Required to process annotations -->
+	<context:annotation-config/>
+
+	<!-- Property placeholder -->
+	<context:property-placeholder location="classpath:pl/edu/agh/footprint/age/carbon-footprint-config.properties"/>
+
+	<!-- Carbon Footprint beans -->
+	<bean id="methodsContainer" class="pl.edu.agh.footprint.tree.methods.container.TestProblemMethodsContainer"/>
+	<bean id="parameterFactory" class="pl.edu.agh.footprint.tree.factory.ParameterFactory"/>
+	<bean id="footprintTreeProvider" class="pl.edu.agh.footprint.tree.provider.FootprintTreeProvider">
+		<constructor-arg name="filePath" value="${footprint.input-file}"/>
+		<constructor-arg name="methodsContainer" ref="methodsContainer"/>
+		<constructor-arg name="parameterFactory" ref="parameterFactory"/>
+	</bean>
+
+</beans>
