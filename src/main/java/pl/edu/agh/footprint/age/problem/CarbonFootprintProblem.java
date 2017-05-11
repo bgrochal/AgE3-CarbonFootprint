@@ -22,7 +22,7 @@ public class CarbonFootprintProblem implements ProblemDefinition {
 	 *
 	 * @param filePath path to a file containing the definition of the XML footprint tree.
 	 */
-	public CarbonFootprintProblem(String filePath) {
+	public CarbonFootprintProblem(final String filePath) {
 		this.filePath = filePath;
 	}
 
