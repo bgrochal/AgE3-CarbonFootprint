@@ -18,6 +18,7 @@
 	<!-- Property placeholder -->
 	<context:property-placeholder location="classpath:pl/edu/agh/footprint/age/carbon-footprint-config.properties"/>
 
+
 	<!-- Problem definition -->
 	<bean id="problemDefinition" class="pl.edu.agh.footprint.age.problem.CarbonFootprintProblem">
 		<constructor-arg name="filePath" value="${footprint.problem.input-file}"/>
@@ -39,6 +40,29 @@
 		<constructor-arg name="problemDefinition" ref="problemDefinition"/>
 		<constructor-arg name="methodsContainer" ref="methodsContainer"/>
 		<constructor-arg name="parameterFactory" ref="parameterFactory"/>
+	</bean>
+
+	<bean id="footprintTree" factory-bean="footprintTreeProvider" factory-method="getFootprintTree"/>
+
+	<bean id="objectCloner" class="com.rits.cloning.Cloner">
+		<property name="dumpClonedClasses" value="true"/>
+		<property name="cloningEnabled" value="true"/>
+	</bean>
+
+
+	<!-- EMAS platform configuration -->
+	<bean id="evaluatorCounter" class="pl.edu.agh.age.compute.stream.problem.EvaluatorCounter"
+		  factory-method="simpleCounter">
+	</bean>
+	<bean id="evaluator" class="pl.edu.agh.footprint.age.evaluator.CarbonFootprintEvaluator">
+		<constructor-arg name="counter" ref="evaluatorCounter"/>
+		<constructor-arg name="methodsContainer" ref="methodsContainer"/>
+	</bean>
+
+	<bean id="solutionFactory" class="pl.edu.agh.footprint.age.solution.CarbonFootprintSolutionFactory">
+		<constructor-arg name="footprintTree" ref="footprintTree"/>
+		<constructor-arg name="objectCloner" ref="objectCloner"/>
+		<constructor-arg name="evaluator" ref="evaluator"/>
 	</bean>
 
 </beans>
