@@ -15,14 +15,14 @@ import java.util.List;
 public class FootprintTree {
 
 	// Obligatory attributes.
-	private final String targetActionTitle;
+	private final String targetActionType;
 
 	// Optional attributes.
 	private final List<Action> actions;
 
 
-	public FootprintTree(String targetActionTitle) {
-		this.targetActionTitle = targetActionTitle;
+	public FootprintTree(String targetActionType) {
+		this.targetActionType = targetActionType;
 		actions = new LinkedList<>();
 	}
 
@@ -31,11 +31,19 @@ public class FootprintTree {
 		actions.add(footprintAction);
 	}
 
+	public String getTargetActionType() {
+		return targetActionType;
+	}
+
+	public List<Action> getActions() {
+		return actions;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder()
-			.append("Target action title: ")
-			.append(targetActionTitle)
+			.append("Target action type: ")
+			.append(targetActionType)
 			.append("\n\nAvailable actions:\n");
 		actions.forEach(action -> builder.append(action).append("\n"));
 

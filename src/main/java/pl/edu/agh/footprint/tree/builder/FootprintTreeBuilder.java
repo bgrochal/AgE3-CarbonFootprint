@@ -13,8 +13,8 @@ public class FootprintTreeBuilder {
 	private final FootprintTree footprintTree;
 
 
-	public FootprintTreeBuilder(String targetActionTitle) {
-		footprintTree = new FootprintTree(targetActionTitle);
+	public FootprintTreeBuilder(String targetActionType) {
+		footprintTree = new FootprintTree(targetActionType);
 	}
 
 

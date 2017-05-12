@@ -44,6 +44,26 @@ public class Action {
 		footprintActionTypes.add(footprintActionType);
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public Method getMethod() {
+		return method;
+	}
+
+	public List<Parameter> getParameters() {
+		return parameters;
+	}
+
+	public List<String> getFootprintActionTypes() {
+		return footprintActionTypes;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder()
