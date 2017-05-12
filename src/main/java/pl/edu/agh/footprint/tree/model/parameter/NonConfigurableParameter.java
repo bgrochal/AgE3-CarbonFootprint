@@ -8,7 +8,7 @@ package pl.edu.agh.footprint.tree.model.parameter;
 public class NonConfigurableParameter extends Parameter {
 
 	public NonConfigurableParameter(String name, double value) {
-		super(name, value, false);
+		super(name, false, value);
 	}
 
 }

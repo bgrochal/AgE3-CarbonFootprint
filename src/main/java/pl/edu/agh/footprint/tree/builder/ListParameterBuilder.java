@@ -12,8 +12,8 @@ public class ListParameterBuilder {
 	private final ListParameter listParameter;
 
 
-	public ListParameterBuilder(String name, double value) {
-		listParameter = new ListParameter(name, value);
+	public ListParameterBuilder(String name) {
+		listParameter = new ListParameter(name);
 	}
 
 

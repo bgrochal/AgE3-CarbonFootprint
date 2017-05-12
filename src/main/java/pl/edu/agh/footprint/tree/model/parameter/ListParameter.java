@@ -18,14 +18,19 @@ public class ListParameter extends ConfigurableParameter {
 	private final List<Double> values;
 
 
-	public ListParameter(String name, double value) {
-		super(name, value);
+	public ListParameter(String name) {
+		super(name);
 		values = new LinkedList<>();
 	}
 
 
 	public void addValue(double value) {
 		values.add(value);
+	}
+
+	@Override
+	public void setRandomValue() {
+		value = values.get(randomGenerator.nextInt(values.size()));
 	}
 
 	@Override

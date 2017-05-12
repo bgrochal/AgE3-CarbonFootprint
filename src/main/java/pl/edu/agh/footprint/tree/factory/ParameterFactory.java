@@ -29,7 +29,8 @@ public class ParameterFactory {
 	public Parameter createParameter(Node parameterNode) {
 		String parameterType = parameterNode.valueOf(ACTION_PARAMETER_TYPE.getTagPath());
 		if (parameterType.length() == 0) {
-			return new NonConfigurableParameter(getParameterName(parameterNode), getParameterValue(parameterNode));
+			return new NonConfigurableParameter(getParameterName(parameterNode),
+				StringValueParser.parseDouble(parameterNode.valueOf(ACTION_PARAMETER_VALUE.getTagPath())));
 		}
 
 		return ConfigurableParameterType.fromString(parameterType).getParameter(parameterNode);
@@ -43,15 +44,6 @@ public class ParameterFactory {
 	 */
 	private static String getParameterName(Node parameterNode) {
 		return parameterNode.valueOf(ACTION_PARAMETER_NAME.getTagPath());
-	}
-
-	/**
-	 * <p>This is a utility method returning value of the &lt;Parameter value="..." ...&gt; attribute.</p>
-	 *
-	 * <p>Note: This method is static because it is used by the {@link ConfigurableParameterType enum} types.</p>
-	 */
-	private static double getParameterValue(Node parameterNode) {
-		return StringValueParser.parseDouble(parameterNode.valueOf(ACTION_PARAMETER_VALUE.getTagPath()));
 	}
 
 
@@ -70,7 +62,7 @@ public class ParameterFactory {
 			@Override
 			public Parameter getParameter(Node parameterNode) {
 				ListParameterBuilder listParameterBuilder =
-					new ListParameterBuilder(getParameterName(parameterNode), getParameterValue(parameterNode));
+					new ListParameterBuilder(getParameterName(parameterNode));
 
 				List<Node> listParameters = parameterNode.selectNodes(ACTION_LIST_PARAMETER.getTagPath());
 				listParameters.forEach(value ->
@@ -86,7 +78,7 @@ public class ParameterFactory {
 		RANGE("range") {
 			@Override
 			public Parameter getParameter(Node parameterNode) {
-				return new RangeParameter(getParameterName(parameterNode), getParameterValue(parameterNode),
+				return new RangeParameter(getParameterName(parameterNode),
 					StringValueParser.parseDouble(parameterNode.valueOf(ACTION_RANGE_PARAMETER_MIN.getTagPath())),
 					StringValueParser.parseDouble(parameterNode.valueOf(ACTION_RANGE_PARAMETER_MAX.getTagPath())));
 			}

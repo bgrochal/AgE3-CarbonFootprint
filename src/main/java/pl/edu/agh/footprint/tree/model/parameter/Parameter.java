@@ -9,26 +9,57 @@ public abstract class Parameter {
 
 	// Obligatory attributes.
 	private final String name;
-	private final double value;
 	private final boolean configurable;
 
+	// Optional attributes.
+	double value;
 
-	public Parameter(String name, double value, boolean configurable) {
+
+	Parameter(String name, boolean configurable) {
+		this(name, configurable, Double.NaN);
+	}
+
+	Parameter(String name, boolean configurable, double value) {
 		this.name = name;
-		this.value = value;
 		this.configurable = configurable;
+
+		this.value = value;
 	}
 
 
+	public String getName() {
+		return name;
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(double value) {
+		this.value = value;
+	}
+
+	public boolean hasValue() {
+		return !Double.isNaN(value);
+	}
+
+	public boolean isConfigurable() {
+		return configurable;
+	}
+
 	@Override
 	public String toString() {
-		return new StringBuilder()
+		StringBuilder builder = new StringBuilder()
 			.append("param :\n\t\t\tname\t: ")
 			.append(name)
-			.append("\n\t\t\tvalue\t: ")
-			.append(value)
 			.append("\n\t\t\tconfig\t: ")
-			.append(configurable)
+			.append(configurable);
+		if (hasValue()) {
+			builder
+				.append("\n\t\t\tvalue\t: ")
+				.append(value);
+		}
+		return builder
 			.append("\n")
 			.toString();
 	}

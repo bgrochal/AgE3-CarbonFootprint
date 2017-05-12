@@ -14,13 +14,18 @@ public class RangeParameter extends ConfigurableParameter {
 	private final double max;
 
 
-	public RangeParameter(String name, double value, double min, double max) {
-		super(name, value);
+	public RangeParameter(String name, double min, double max) {
+		super(name);
 
 		this.min = min;
 		this.max = max;
 	}
 
+
+	@Override
+	public void setRandomValue() {
+		value = min + (max - min) * randomGenerator.nextDouble();
+	}
 
 	@Override
 	public String toString() {
