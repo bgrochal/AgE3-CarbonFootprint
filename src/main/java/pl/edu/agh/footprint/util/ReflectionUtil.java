@@ -3,6 +3,7 @@ package pl.edu.agh.footprint.util;
 import pl.edu.agh.footprint.tree.methods.container.MethodsContainer;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * This class contains utility methods used for invoking functions defined in the {@link MethodsContainer} by
@@ -24,7 +25,7 @@ public class ReflectionUtil {
 	 */
 	public static Method getMethodByName(String methodName, MethodsContainer methodsContainer) throws IllegalArgumentException {
 		try {
-			return methodsContainer.getClass().getMethod(methodName);
+			return methodsContainer.getClass().getMethod(methodName, List.class, List.class);
 		} catch (NoSuchMethodException exc) {
 			throw new IllegalArgumentException("Unsupported method name: " + methodName + ".");
 		}
