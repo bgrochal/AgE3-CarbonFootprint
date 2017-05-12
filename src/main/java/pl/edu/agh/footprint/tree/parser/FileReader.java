@@ -22,8 +22,7 @@ public class FileReader {
 	 * @throws NullPointerException when given {@code path} is null.
 	 */
 	public static File readFile(@NotNull String path) throws NullPointerException {
-		Preconditions.checkNotNull(path);
-		return new File(path);
+		return new File(Preconditions.checkNotNull(path));
 	}
 
 }
