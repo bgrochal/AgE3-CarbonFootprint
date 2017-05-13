@@ -26,7 +26,7 @@ public class CarbonFootprintSolutionPrinter {
 		StringBuilder builder = new StringBuilder()
 			.append("Solution fitness: ")
 			.append(solution.fitnessValue())
-			.append("\nSolution tree:\n\n");
+			.append("\nSolution tree:\n");
 		appendSolutionTreeStringRepresentation(solution.getSolutionTree(), builder);
 
 		return builder.toString();
@@ -55,19 +55,18 @@ public class CarbonFootprintSolutionPrinter {
 			.append(indent)
 			.append("Title: ")
 			.append(nodeAction.getTitle())
-			.append("\n")
-			.append("Type: ")
+			.append("; type: ")
 			.append(nodeAction.getType())
 			.append("\n");
 		nodeParameters.forEach(parameter ->
 			builder
+				.append(indent)
 				.append("  Parameter name: ")
 				.append(parameter.getName())
 				.append("; value: ")
 				.append(parameter.getValue())
 				.append("\n")
 		);
-		builder.append("\n");
 
 		final int childIndentCount = indentCount + 1;
 		treeNode.getChildren().forEach(child ->

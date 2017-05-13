@@ -30,5 +30,5 @@
 		<Action title="Action 3" type="Type 2" method="calculateAction3"/>
 	</Actions>
 
-	<Target>Action 1</Target>
+	<Target>Type 1</Target>
 </CarbonFootprint>

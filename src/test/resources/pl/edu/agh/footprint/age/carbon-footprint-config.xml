@@ -45,7 +45,7 @@
 	<bean id="footprintTree" factory-bean="footprintTreeProvider" factory-method="getFootprintTree"/>
 
 	<bean id="objectCloner" class="com.rits.cloning.Cloner">
-		<property name="dumpClonedClasses" value="true"/>
+		<property name="dumpClonedClasses" value="false"/>
 		<property name="cloningEnabled" value="true"/>
 	</bean>
 
@@ -63,6 +63,12 @@
 		<constructor-arg name="footprintTree" ref="footprintTree"/>
 		<constructor-arg name="objectCloner" ref="objectCloner"/>
 		<constructor-arg name="evaluator" ref="evaluator"/>
+	</bean>
+
+	<bean id="populationGenerator" class="pl.edu.agh.footprint.age.population.CarbonFootprintPopulationGenerator">
+		<constructor-arg name="solutionFactory" ref="solutionFactory"/>
+		<constructor-arg name="agentsCount" value="${footprint.population.size}"/>
+		<constructor-arg name="initialEnergy" value="${footprint.population.initial-energy}"/>
 	</bean>
 
 </beans>
