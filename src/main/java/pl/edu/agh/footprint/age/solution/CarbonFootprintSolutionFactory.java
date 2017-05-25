@@ -1,8 +1,9 @@
 package pl.edu.agh.footprint.age.solution;
 
 import com.google.common.base.Preconditions;
-import com.rits.cloning.Cloner;
 import pl.edu.agh.footprint.age.evaluator.CarbonFootprintEvaluator;
+import pl.edu.agh.footprint.age.util.ObjectClonerService;
+import pl.edu.agh.footprint.age.util.TreeUtil;
 import pl.edu.agh.footprint.tree.model.Action;
 import pl.edu.agh.footprint.tree.model.FootprintTree;
 import pl.edu.agh.footprint.tree.model.parameter.ConfigurableParameter;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  * This class defines a factory method for creating individuals corresponding to solutions of the Carbon Footprint
@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 public class CarbonFootprintSolutionFactory {
 
 	private final FootprintTree footprintTree;
-	private final Cloner objectCloner;
 	private final CarbonFootprintEvaluator evaluator;
+	private final ObjectClonerService objectClonerService;
 
 	private final Random randomGenerator;
 	private final Map<String, List<Action>> actionsByType;
@@ -39,55 +39,77 @@ public class CarbonFootprintSolutionFactory {
 	/**
 	 * Instantiates a new factory method creating solutions of the CARBON FOOTPRINT problem.
 	 *
-	 * @param footprintTree representation of the footprint tree defined as an input of the algorithm.
-	 * @param objectCloner  service object used for deep cloning other objects.
-	 * @param evaluator     mechanism for calculating fitness value of a solution.
+	 * @param footprintTree       representation of the footprint tree defined as an input of the algorithm.
+	 * @param evaluator           mechanism for calculating fitness value of a solution.
+	 * @param objectClonerService service used for cloning (a.k.a. copying) other objects.
 	 */
-	public CarbonFootprintSolutionFactory(final FootprintTree footprintTree, final Cloner objectCloner,
-										  final CarbonFootprintEvaluator evaluator) {
+	public CarbonFootprintSolutionFactory(final FootprintTree footprintTree, final CarbonFootprintEvaluator evaluator,
+										  final ObjectClonerService objectClonerService) {
 		this.footprintTree = Preconditions.checkNotNull(footprintTree);
-		this.objectCloner = Preconditions.checkNotNull(objectCloner);
 		this.evaluator = Preconditions.checkNotNull(evaluator);
+		this.objectClonerService = Preconditions.checkNotNull(objectClonerService);
 
 		randomGenerator = ThreadLocalRandom.current();
-		actionsByType = getActionsByType();
+		actionsByType = TreeUtil.getActionsByType(this.footprintTree.getActions());
 	}
 
 
 	/**
-	 * Returns a new {@link CarbonFootprintSolution solution} of the Carbon Footprint problem.
+	 * Returns a new {@link CarbonFootprintSolution solution} of the Carbon Footprint problem. Nodes of the {@link
+	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTree SolutionTree} are composed of the randomly
+	 * selected {@link Action}s defined in the XML footprint tree.
 	 */
 	public CarbonFootprintSolution create() {
-		CarbonFootprintSolution solution = new CarbonFootprintSolution(createSolutionTree());
+		return create(actionsByType);
+	}
+
+	/**
+	 * <p>Returns a new {@link CarbonFootprintSolution solution} of the Carbon Footprint problem. Nodes of the {@link
+	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTree SolutionTree} are composed of the randomly
+	 * selected {@link Action}s defined by the {@code actionByType} map.</p>
+	 *
+	 * <p>The {@code actionsByType} parameter contains a {@code String -> List<Action>} mapping between the all possible
+	 * {@link Action#type}s and the {@link List}s containing (not necessarily all possible) {@link Action}s with given
+	 * {@link Action#type}.</p>
+	 *
+	 * <p>Note that this method may return a {@link CarbonFootprintSolution solution}, which {@link
+	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode nodes} are composed only from a subset
+	 * of available {@link Action}s of some {@link Action#type}, unlike when invoking the {@link #create()} method
+	 * (which always selects {@link Action}s forming a {@link
+	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTree Solution Tree} from all available actions
+	 * defined in the XML footprint tree).</p>
+	 *
+	 * @see TreeUtil#getActionsByType(List)
+	 */
+	public CarbonFootprintSolution create(Map<String, List<Action>> actionsByType) {
+		CarbonFootprintSolution solution = new CarbonFootprintSolution(createSolutionTree(actionsByType));
 		return solution.updateFitness(evaluator.evaluate(solution));
 	}
 
 
 	/**
-	 * Returns a mapping between a {@link Action#type types} and a list of {@link Action actions} containing this {@link
-	 * Action#type}.
+	 * <p>Returns an instance of the {@link CarbonFootprintSolution.SolutionTree} class being a newly-generated
+	 * footprint tree forming the solution of the Carbon Footprint problem.</p>
+	 *
+	 * <p>Note that all available {@link Action}s of each {@link Action#type} which could form a {@link
+	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode} must be defined by the {@code
+	 * actionsByType} map.</p>
 	 */
-	private Map<String, List<Action>> getActionsByType() {
-		return footprintTree.getActions().stream().collect(Collectors.groupingBy(Action::getType));
-	}
-
-	/**
-	 * Returns an instance of the {@link CarbonFootprintSolution.SolutionTree} class being a newly-generated solution of
-	 * the Carbon Footprint problem.
-	 */
-	private CarbonFootprintSolution.SolutionTree createSolutionTree() {
+	private CarbonFootprintSolution.SolutionTree createSolutionTree(Map<String, List<Action>> actionsByType) {
 		final CarbonFootprintSolution.SolutionTreeNode rootNode =
-			createSolutionTreeNode(footprintTree.getTargetActionType());
+			createSolutionTreeNode(footprintTree.getTargetActionType(), actionsByType);
 		return new CarbonFootprintSolution.SolutionTree(rootNode);
 	}
 
 	/**
-	 * Returns a node of a newly-generated {@link CarbonFootprintSolution.SolutionTree solution tree}.
+	 * Returns a {@link pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode node} of a
+	 * newly-generated {@link CarbonFootprintSolution.SolutionTree solution tree}.
 	 */
-	private CarbonFootprintSolution.SolutionTreeNode createSolutionTreeNode(String nodeActionType) {
+	private CarbonFootprintSolution.SolutionTreeNode createSolutionTreeNode(String nodeActionType,
+																			Map<String, List<Action>> actionsByType) {
 		List<Action> correspondingActions = actionsByType.get(nodeActionType);
 		Action originalAction = correspondingActions.get(randomGenerator.nextInt(correspondingActions.size()));
-		Action copiedAction = objectCloner.deepClone(originalAction);
+		Action copiedAction = objectClonerService.deepClone(originalAction);
 		copiedAction.getParameters().stream()
 			.filter(Parameter::isConfigurable)
 			.map(parameter -> (ConfigurableParameter) parameter)
@@ -95,7 +117,7 @@ public class CarbonFootprintSolutionFactory {
 
 		CarbonFootprintSolution.SolutionTreeNode treeNode = new CarbonFootprintSolution.SolutionTreeNode(copiedAction);
 		copiedAction.getFootprintActionTypes().forEach(footprintActionType ->
-			treeNode.addChild(createSolutionTreeNode(footprintActionType)));
+			treeNode.addChild(createSolutionTreeNode(footprintActionType, actionsByType)));
 		return treeNode;
 	}
 
