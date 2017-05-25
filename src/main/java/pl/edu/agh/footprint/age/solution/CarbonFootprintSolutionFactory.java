@@ -60,7 +60,7 @@ public class CarbonFootprintSolutionFactory {
 	 * selected {@link Action}s defined in the XML footprint tree.
 	 */
 	public CarbonFootprintSolution create() {
-		return create(actionsByType);
+		return create(actionsByType, true);
 	}
 
 	/**
@@ -81,8 +81,9 @@ public class CarbonFootprintSolutionFactory {
 	 *
 	 * @see TreeUtil#getActionsByType(List)
 	 */
-	public CarbonFootprintSolution create(Map<String, List<Action>> actionsByType) {
-		CarbonFootprintSolution solution = new CarbonFootprintSolution(createSolutionTree(actionsByType));
+	public CarbonFootprintSolution create(Map<String, List<Action>> actionsByType, boolean modifyParameters) {
+		CarbonFootprintSolution solution =
+			new CarbonFootprintSolution(createSolutionTree(actionsByType, modifyParameters));
 		return solution.updateFitness(evaluator.evaluate(solution));
 	}
 
@@ -95,9 +96,10 @@ public class CarbonFootprintSolutionFactory {
 	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode} must be defined by the {@code
 	 * actionsByType} map.</p>
 	 */
-	private CarbonFootprintSolution.SolutionTree createSolutionTree(Map<String, List<Action>> actionsByType) {
+	private CarbonFootprintSolution.SolutionTree createSolutionTree(Map<String, List<Action>> actionsByType,
+																	boolean modifyParameters) {
 		final CarbonFootprintSolution.SolutionTreeNode rootNode =
-			createSolutionTreeNode(footprintTree.getTargetActionType(), actionsByType);
+			createSolutionTreeNode(footprintTree.getTargetActionType(), actionsByType, modifyParameters);
 		return new CarbonFootprintSolution.SolutionTree(rootNode);
 	}
 
@@ -105,19 +107,22 @@ public class CarbonFootprintSolutionFactory {
 	 * Returns a {@link pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode node} of a
 	 * newly-generated {@link CarbonFootprintSolution.SolutionTree solution tree}.
 	 */
-	private CarbonFootprintSolution.SolutionTreeNode createSolutionTreeNode(String nodeActionType,
-																			Map<String, List<Action>> actionsByType) {
+	private CarbonFootprintSolution.SolutionTreeNode createSolutionTreeNode(String nodeActionType, Map<String, List<Action>> actionsByType,
+																			boolean modifyParameters) {
 		List<Action> correspondingActions = actionsByType.get(nodeActionType);
 		Action originalAction = correspondingActions.get(randomGenerator.nextInt(correspondingActions.size()));
 		Action copiedAction = objectClonerService.deepClone(originalAction);
-		copiedAction.getParameters().stream()
-			.filter(Parameter::isConfigurable)
-			.map(parameter -> (ConfigurableParameter) parameter)
-			.forEach(ConfigurableParameter::setRandomValue);
+
+		if (modifyParameters) {
+			copiedAction.getParameters().stream()
+				.filter(Parameter::isConfigurable)
+				.map(parameter -> (ConfigurableParameter) parameter)
+				.forEach(ConfigurableParameter::setRandomValue);
+		}
 
 		CarbonFootprintSolution.SolutionTreeNode treeNode = new CarbonFootprintSolution.SolutionTreeNode(copiedAction);
 		copiedAction.getFootprintActionTypes().forEach(footprintActionType ->
-			treeNode.addChild(createSolutionTreeNode(footprintActionType, actionsByType)));
+			treeNode.addChild(createSolutionTreeNode(footprintActionType, actionsByType, modifyParameters)));
 		return treeNode;
 	}
 
