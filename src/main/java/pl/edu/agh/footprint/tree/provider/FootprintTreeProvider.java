@@ -12,7 +12,7 @@ import pl.edu.agh.footprint.tree.methods.container.MethodsContainer;
 import pl.edu.agh.footprint.tree.model.FootprintTree;
 import pl.edu.agh.footprint.tree.parser.FileReader;
 import pl.edu.agh.footprint.tree.parser.XMLFileParser;
-import pl.edu.agh.footprint.util.ReflectionUtil;
+import pl.edu.agh.footprint.tree.util.ReflectionUtil;
 
 import java.util.List;
 

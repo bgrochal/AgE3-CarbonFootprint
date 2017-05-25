@@ -1,4 +1,4 @@
-package pl.edu.agh.footprint.util;
+package pl.edu.agh.footprint.tree.util;
 
 import pl.edu.agh.footprint.tree.methods.container.MethodsContainer;
 

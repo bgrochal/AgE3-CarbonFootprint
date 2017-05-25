@@ -1,4 +1,4 @@
-package pl.edu.agh.footprint.util;
+package pl.edu.agh.footprint.tree.util;
 
 /**
  * This class contains utility methods used for converting {@link String}s to one of desired specific types.

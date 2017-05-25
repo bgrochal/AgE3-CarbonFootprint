@@ -5,7 +5,7 @@ import pl.edu.agh.footprint.tree.builder.ListParameterBuilder;
 import pl.edu.agh.footprint.tree.model.parameter.NonConfigurableParameter;
 import pl.edu.agh.footprint.tree.model.parameter.Parameter;
 import pl.edu.agh.footprint.tree.model.parameter.RangeParameter;
-import pl.edu.agh.footprint.util.StringValueParser;
+import pl.edu.agh.footprint.tree.util.StringValueParser;
 
 import java.util.List;
 
