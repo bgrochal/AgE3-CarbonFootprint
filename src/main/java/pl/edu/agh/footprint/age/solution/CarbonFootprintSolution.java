@@ -3,6 +3,7 @@ package pl.edu.agh.footprint.age.solution;
 import pl.edu.agh.age.compute.stream.emas.solution.Solution;
 import pl.edu.agh.footprint.tree.model.Action;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class CarbonFootprintSolution implements Solution<CarbonFootprintSolution
 	 */
 	public static class SolutionTreeNode {
 
-		private final Action action;
+		private Action action;
 		private final List<SolutionTreeNode> children;
 
 
@@ -82,6 +83,10 @@ public class CarbonFootprintSolution implements Solution<CarbonFootprintSolution
 		}
 
 
+		public List<SolutionTreeNode> getChildren() {
+			return children;
+		}
+
 		public void addChild(SolutionTreeNode childNode) {
 			children.add(childNode);
 		}
@@ -90,8 +95,8 @@ public class CarbonFootprintSolution implements Solution<CarbonFootprintSolution
 			return action;
 		}
 
-		public List<SolutionTreeNode> getChildren() {
-			return children;
+		public void setAction(Action action) {
+			this.action = action;
 		}
 
 	}
@@ -120,8 +125,29 @@ public class CarbonFootprintSolution implements Solution<CarbonFootprintSolution
 		}
 
 
+		/**
+		 * Returns the root node of this {@link SolutionTree solution tree}.
+		 */
 		public SolutionTreeNode getRoot() {
 			return root;
+		}
+
+		/**
+		 * Returns a pre-ordered list containing all nodes belonging to this {@link SolutionTree solution tree}.
+		 */
+		public List<SolutionTreeNode> getAllPreOrder() {
+			List<SolutionTreeNode> allNodes = Collections.emptyList();
+			getAllPreOrder(root, allNodes);
+			return allNodes;
+		}
+
+
+		/**
+		 * Adds all pre-ordered nodes belonging to the tree rooted in the {@code treeNode} to the {@code allNodes} list.
+		 */
+		private void getAllPreOrder(SolutionTreeNode treeNode, List<SolutionTreeNode> allNodes) {
+			allNodes.add(treeNode);
+			treeNode.getChildren().forEach(childNode -> getAllPreOrder(childNode, allNodes));
 		}
 
 	}
