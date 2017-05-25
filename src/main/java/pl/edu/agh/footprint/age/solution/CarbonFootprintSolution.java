@@ -3,7 +3,6 @@ package pl.edu.agh.footprint.age.solution;
 import pl.edu.agh.age.compute.stream.emas.solution.Solution;
 import pl.edu.agh.footprint.tree.model.Action;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -136,7 +135,7 @@ public class CarbonFootprintSolution implements Solution<CarbonFootprintSolution
 		 * Returns a pre-ordered list containing all nodes belonging to this {@link SolutionTree solution tree}.
 		 */
 		public List<SolutionTreeNode> getAllPreOrder() {
-			List<SolutionTreeNode> allNodes = Collections.emptyList();
+			List<SolutionTreeNode> allNodes = new LinkedList<>();
 			getAllPreOrder(root, allNodes);
 			return allNodes;
 		}
