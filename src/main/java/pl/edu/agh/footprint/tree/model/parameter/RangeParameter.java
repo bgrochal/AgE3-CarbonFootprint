@@ -1,9 +1,13 @@
 package pl.edu.agh.footprint.tree.model.parameter;
 
+import com.google.common.base.Preconditions;
+
 /**
- * This class represents the {@link ConfigurableParameter}, which <strong>value</strong> may be any floating-point
+ * <p>This class represents the {@link ConfigurableParameter}, which <strong>value</strong> may be any floating-point
  * number such that: <strong>min</strong> &le; <strong>value</strong> &le; <strong>max</strong>. This class represents
- * also the &lt;Parameter&gt; tag with the &lt;Range&gt; child.
+ * also the &lt;Parameter&gt; tag with the &lt;Range&gt; child.</p>
+ *
+ * <p>Note that the following condition must be fulfilled: <strong>min < max</strong>.</p>
  *
  * @author Bartłomiej Grochal
  */
@@ -17,6 +21,7 @@ public class RangeParameter extends ConfigurableParameter {
 	public RangeParameter(String name, double min, double max) {
 		super(name);
 
+		Preconditions.checkState(max > min);
 		this.min = min;
 		this.max = max;
 	}
@@ -24,7 +29,12 @@ public class RangeParameter extends ConfigurableParameter {
 
 	@Override
 	public void setRandomValue() {
-		value = min + (max - min) * randomGenerator.nextDouble();
+		double newValue;
+		do {
+			newValue = min + (max - min) * randomGenerator.nextDouble();
+		} while (newValue == value);
+
+		value = newValue;
 	}
 
 	@Override

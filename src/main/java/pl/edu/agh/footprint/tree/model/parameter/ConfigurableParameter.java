@@ -18,6 +18,12 @@ public abstract class ConfigurableParameter extends Parameter {
 	}
 
 
+	/**
+	 * <p>Sets a random {@link #value} to this parameter.</p>
+	 *
+	 * <p>A newly-generated value will always be different than the original value (see general notes for child
+	 * classes specifying proper contracts).</p>
+	 */
 	public abstract void setRandomValue();
 
 }
