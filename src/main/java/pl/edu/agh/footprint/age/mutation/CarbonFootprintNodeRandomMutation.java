@@ -4,6 +4,8 @@ import pl.edu.agh.footprint.age.solution.CarbonFootprintSolution;
 import pl.edu.agh.footprint.age.util.ObjectClonerService;
 import pl.edu.agh.footprint.age.util.TreeUtil;
 import pl.edu.agh.footprint.tree.model.Action;
+import pl.edu.agh.footprint.tree.model.parameter.ConfigurableParameter;
+import pl.edu.agh.footprint.tree.model.parameter.Parameter;
 
 import java.util.List;
 import java.util.Map;
@@ -23,20 +25,16 @@ import java.util.Map;
  */
 public class CarbonFootprintNodeRandomMutation extends CarbonFootprintAbstractMutation {
 
-	private final ObjectClonerService clonerService;
 	private final Map<String, List<Action>> actionsByType;
 
 
 	/**
 	 * @param actions       list of all {@link Action}s defined in the XML footprint tree (parsed as an instance of the
 	 *                      {@link pl.edu.agh.footprint.tree.model.FootprintTree FootprintTree} class).
-	 * @param clonerService service bean returning a clone (a.k.a. a copy) of an object of any type.
 	 */
-	public CarbonFootprintNodeRandomMutation(final double mutationProbability, final List<Action> actions,
-											 final ObjectClonerService clonerService) {
-		super(mutationProbability);
-		this.clonerService = clonerService;
-
+	public CarbonFootprintNodeRandomMutation(final double mutationProbability, final ObjectClonerService objectClonerService,
+											 final List<Action> actions) {
+		super(mutationProbability, objectClonerService);
 		actionsByType = TreeUtil.getActionsByType(actions);
 	}
 
@@ -56,14 +54,16 @@ public class CarbonFootprintNodeRandomMutation extends CarbonFootprintAbstractMu
 	@Override
 	public CarbonFootprintSolution mutate(CarbonFootprintSolution solution) {
 		// TODO: Should be a copy of the solution made here? Why (if so)?
-		solution.getSolutionTree().getAllPreOrder()
+		CarbonFootprintSolution copiedSolution = objectClonerService.deepClone(solution);
+
+		copiedSolution.getSolutionTree().getAllPreOrder()
 			.forEach(treeNode -> {
 				if (randomGenerator.nextDouble() < mutationProbability) {
 					performMutation(treeNode);
 				}
 			});
 
-		return solution;
+		return copiedSolution;
 	}
 
 
@@ -74,8 +74,16 @@ public class CarbonFootprintNodeRandomMutation extends CarbonFootprintAbstractMu
 	 */
 	private void performMutation(CarbonFootprintSolution.SolutionTreeNode treeNode) {
 		List<Action> correspondingActions = actionsByType.get(treeNode.getAction().getType());
-		Action newAction = correspondingActions.get(randomGenerator.nextInt(correspondingActions.size()));
-		treeNode.setAction(clonerService.deepClone(newAction));
+		Action originalAction = correspondingActions.get(randomGenerator.nextInt(correspondingActions.size()));
+		Action copiedAction = objectClonerService.deepClone(originalAction);
+
+		// TODO: Unify with duplicated code in CarbonFootprintSolutionFactory#createSolutionTreeNode(String, Map, boolean).
+		copiedAction.getParameters().stream()
+			.filter(Parameter::isConfigurable)
+			.map(parameter -> (ConfigurableParameter) parameter)
+			.forEach(ConfigurableParameter::setRandomValue);
+
+		treeNode.setAction(copiedAction);
 	}
 
 }

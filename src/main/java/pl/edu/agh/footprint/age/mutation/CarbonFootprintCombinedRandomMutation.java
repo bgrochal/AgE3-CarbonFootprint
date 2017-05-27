@@ -2,6 +2,7 @@ package pl.edu.agh.footprint.age.mutation;
 
 import com.google.common.base.Preconditions;
 import pl.edu.agh.footprint.age.solution.CarbonFootprintSolution;
+import pl.edu.agh.footprint.age.util.ObjectClonerService;
 
 /**
  * <p>This class defines the mutation algorithm acting on either {@link
@@ -34,10 +35,11 @@ public class CarbonFootprintCombinedRandomMutation extends CarbonFootprintAbstra
 	 * @param parameterMutation            instance of the {@link CarbonFootprintParameterRandomMutation} operator.
 	 * @param nodeMutation                 instance of the {@link CarbonFootprintNodeRandomMutation} operator.
 	 */
-	CarbonFootprintCombinedRandomMutation(final double mutationProbability, final double parameterMutationProbability,
-										  final double nodeMutationProbability, final CarbonFootprintParameterRandomMutation parameterMutation,
+	CarbonFootprintCombinedRandomMutation(final double mutationProbability, final ObjectClonerService objectClonerService,
+										  final double parameterMutationProbability, final double nodeMutationProbability,
+										  final CarbonFootprintParameterRandomMutation parameterMutation,
 										  final CarbonFootprintNodeRandomMutation nodeMutation) {
-		super(mutationProbability);
+		super(mutationProbability, objectClonerService);
 		Preconditions.checkArgument(parameterMutationProbability + nodeMutationProbability == 1.0);
 
 		this.parameterMutationProbability = parameterMutationProbability;
@@ -54,7 +56,7 @@ public class CarbonFootprintCombinedRandomMutation extends CarbonFootprintAbstra
 	 */
 	@Override
 	public CarbonFootprintSolution mutate(CarbonFootprintSolution solution) {
-		// TODO: Should be a copy of the solution made here? Why (if so)?
+		// There is no need to copy the solution object, because it is done by proper mutation manager.
 		return randomGenerator.nextDouble() < parameterMutationProbability ?
 			parameterMutation.mutate(solution) : nodeMutation.mutate(solution);
 	}

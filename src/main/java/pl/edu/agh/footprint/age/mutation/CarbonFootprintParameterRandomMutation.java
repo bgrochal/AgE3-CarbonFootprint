@@ -1,6 +1,7 @@
 package pl.edu.agh.footprint.age.mutation;
 
 import pl.edu.agh.footprint.age.solution.CarbonFootprintSolution;
+import pl.edu.agh.footprint.age.util.ObjectClonerService;
 import pl.edu.agh.footprint.tree.model.Action;
 import pl.edu.agh.footprint.tree.model.parameter.ConfigurableParameter;
 
@@ -24,8 +25,8 @@ import java.util.List;
  */
 public class CarbonFootprintParameterRandomMutation extends CarbonFootprintAbstractMutation {
 
-	public CarbonFootprintParameterRandomMutation(final double mutationProbability) {
-		super(mutationProbability);
+	public CarbonFootprintParameterRandomMutation(final double mutationProbability, final ObjectClonerService objectClonerService) {
+		super(mutationProbability, objectClonerService);
 	}
 
 
@@ -43,7 +44,9 @@ public class CarbonFootprintParameterRandomMutation extends CarbonFootprintAbstr
 	@Override
 	public CarbonFootprintSolution mutate(CarbonFootprintSolution solution) {
 		// TODO: Should be a copy of the solution made here? Why (if so)?
-		solution.getSolutionTree().getAllPreOrder().stream()
+		CarbonFootprintSolution copiedSolution = objectClonerService.deepClone(solution);
+
+		copiedSolution.getSolutionTree().getAllPreOrder().stream()
 			.map(CarbonFootprintSolution.SolutionTreeNode::getAction)
 			.map(Action::getParameters)
 			.flatMap(List::stream)
@@ -54,7 +57,7 @@ public class CarbonFootprintParameterRandomMutation extends CarbonFootprintAbstr
 				}
 			});
 
-		return solution;
+		return copiedSolution;
 	}
 
 
