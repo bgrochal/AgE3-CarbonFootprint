@@ -97,6 +97,4 @@
 		<constructor-arg name="nodeMutation" ref="nodeMutationManager"/>
 	</bean>
 
-	<!-- TODO: zadeklarować pozostałe wymagane beany, uruchomić symulację i sprawdzić co z tego wyszło -->
-
 </beans>
