@@ -43,10 +43,14 @@
 	</bean>
 
 	<bean id="footprintTree" factory-bean="footprintTreeProvider" factory-method="getFootprintTree"/>
+	<bean id="availableActions" factory-bean="footprintTree" factory-method="getActions"/>
 
 	<bean id="objectCloner" class="com.rits.cloning.Cloner">
 		<property name="dumpClonedClasses" value="false"/>
 		<property name="cloningEnabled" value="true"/>
+	</bean>
+	<bean id="objectClonerService" class="pl.edu.agh.footprint.age.util.ObjectClonerService">
+		<constructor-arg name="objectCloner" ref="objectCloner"/>
 	</bean>
 
 
@@ -61,8 +65,8 @@
 
 	<bean id="solutionFactory" class="pl.edu.agh.footprint.age.solution.CarbonFootprintSolutionFactory">
 		<constructor-arg name="footprintTree" ref="footprintTree"/>
-		<constructor-arg name="objectCloner" ref="objectCloner"/>
 		<constructor-arg name="evaluator" ref="evaluator"/>
+		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
 	</bean>
 
 	<bean id="populationGenerator" class="pl.edu.agh.footprint.age.population.CarbonFootprintPopulationGenerator">
@@ -70,5 +74,29 @@
 		<constructor-arg name="agentsCount" value="${footprint.population.size}"/>
 		<constructor-arg name="initialEnergy" value="${footprint.population.initial-energy}"/>
 	</bean>
+
+	<bean id="recombinationManager" class="${footprint.recombination.class}">
+		<constructor-arg name="solutionFactory" ref="solutionFactory"/>
+	</bean>
+
+	<bean id="parameterMutationManager" class="${footprint.mutation.parameter.class}">
+		<constructor-arg name="mutationProbability" value="${footprint.mutation.parameter.probability}"/>
+		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
+	</bean>
+	<bean id="nodeMutationManager" class="${footprint.mutation.node.class}">
+		<constructor-arg name="mutationProbability" value="${footprint.mutation.node.probability}"/>
+		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
+		<constructor-arg name="actions" ref="availableActions"/>
+	</bean>
+	<bean id="combinedMutationManager" class="${footprint.mutation.combined.class}">
+		<constructor-arg name="mutationProbability" value="${footprint.mutation.combined.probability}"/>
+		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
+		<constructor-arg name="parameterMutationProbability" value="${footprint.mutation.combined.parameter_mutation_probability}"/>
+		<constructor-arg name="nodeMutationProbability" value="${footprint.mutation.combined.node_mutation_probability}"/>
+		<constructor-arg name="parameterMutation" ref="parameterMutationManager"/>
+		<constructor-arg name="nodeMutation" ref="nodeMutationManager"/>
+	</bean>
+
+	<!-- TODO: zadeklarować pozostałe wymagane beany, uruchomić symulację i sprawdzić co z tego wyszło -->
 
 </beans>
