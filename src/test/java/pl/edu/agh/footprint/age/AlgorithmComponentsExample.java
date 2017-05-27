@@ -1,4 +1,4 @@
-package pl.edu.agh.footprint.tree;
+package pl.edu.agh.footprint.age;
 
 import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -11,14 +11,13 @@ import pl.edu.agh.footprint.age.mutation.CarbonFootprintParameterRandomMutation;
 import pl.edu.agh.footprint.age.population.CarbonFootprintPopulationGenerator;
 import pl.edu.agh.footprint.age.recombination.CarbonFootprintRandomTreeRecombination;
 import pl.edu.agh.footprint.age.solution.CarbonFootprintSolution;
-import pl.edu.agh.footprint.tree.model.FootprintTree;
 
 import java.util.List;
 
 /**
  * @author Bartłomiej Grochal
  */
-public class FootprintTreeProviderTest {
+public class AlgorithmComponentsExample {
 
 	@Test
 	public void printGenotypesWithCombinedParametersAndNodes() {
@@ -93,14 +92,6 @@ public class FootprintTreeProviderTest {
 			.append("\n"));
 
 		System.out.println(builder.toString());
-	}
-
-	@Test
-	public void printFootprintTree() {
-		ConfigurableApplicationContext context =
-			new ClassPathXmlApplicationContext("pl/edu/agh/footprint/age/carbon-footprint-config.xml");
-		FootprintTree footprintTree = context.getBean(FootprintTree.class);
-		System.out.println(footprintTree);
 	}
 
 }
