@@ -18,8 +18,11 @@ import java.util.Map;
  * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode#action}s with given {@link
  * Action#type} to another, randomly selected {@link Action}s with corresponding {@link Action#type}.</p>
  *
- * <p>Note that it is acceptable to mutate multiple nodes in a single mutation process. Moreover, a new {@link Action}
- * selected for given node may be the same as a previous one.</p>
+ * <p>Note that it is acceptable to mutate multiple nodes in a single mutation process. Note also that a mutated {@link
+ * Action} may be the same as the previous one if and only if this {@link Action} does not have any corresponding {@link
+ * Action} (e.g. another {@link Action} with the same {@link Action#type}). If there exist at least two {@link Action}s
+ * with the same {@link Action#type}, the mutated {@link Action} will be different than original one (i.e. the mutated
+ * {@link Action} will have different {@link Action#title}).
  *
  * @author Bartłomiej Grochal
  */
@@ -73,13 +76,20 @@ public class CarbonFootprintNodeRandomMutation extends CarbonFootprintAbstractMu
 	 * Action}s are corresponding when they have the same {@link Action#type}.
 	 */
 	private void performMutation(CarbonFootprintSolution.SolutionTreeNode treeNode) {
-		List<Action> correspondingActions = actionsByType.get(treeNode.getAction().getType());
-		Action originalAction = correspondingActions.get(randomGenerator.nextInt(correspondingActions.size()));
+		Action originalAction = treeNode.getAction();
+		List<Action> correspondingActions = actionsByType.get(originalAction.getType());
+
+		// Drawing an action, which is different than the original action (if it's possible, e.g. if there exists more
+		// than one action of given type.
+		while (correspondingActions.size() > 1 && originalAction.getTitle().equals(treeNode.getAction().getTitle())) {
+			originalAction = correspondingActions.get(randomGenerator.nextInt(correspondingActions.size()));
+		}
 		Action copiedAction = objectClonerService.deepClone(originalAction);
 
-		// TODO: Unify with duplicated code in CarbonFootprintSolutionFactory#createSolutionTreeNode(String, Map, boolean).
+		// If a new action has been drawn, values of its parameters will be Double.NaN.
 		copiedAction.getParameters().stream()
 			.filter(Parameter::isConfigurable)
+			.filter(parameter -> !parameter.hasValue())
 			.map(parameter -> (ConfigurableParameter) parameter)
 			.forEach(ConfigurableParameter::setRandomValue);
 

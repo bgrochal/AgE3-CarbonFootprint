@@ -14,10 +14,10 @@ import java.util.List;
  * value of the {@link #mutationProbability} parameter). Then, each of selected parameters is mutated by setting a
  * random value belonging to the domain (either list or range) of this parameter.</p>
  *
- * <p>Note that it is acceptable to mutate parameters of multiple nodes in a single mutation process. Moreover, a new
- * value of the mutated parameter may be the same as a previous value. Furthermore, there is no limit for number of
- * parameters which may be mutated in a single node during a single mutation process (i.e. for given {@link Action},
- * there may be no mutation, as well as either exactly one, more than one or all parameters may be mutated).</p>
+ * <p>Note that it is acceptable to mutate parameters of multiple nodes in a single mutation process. Note also that a
+ * new value of the mutated parameter will always be different than a previous value. Furthermore, there is no limit for
+ * number of parameters which may be mutated in a single node during a single mutation process (i.e. for given {@link
+ * Action}, there may be no mutation, as well as either exactly one, more than one or all parameters may be mutated).</p>
  *
  * @see ConfigurableParameter#setRandomValue()
  *
