@@ -1,7 +1,6 @@
 package pl.edu.agh.footprint.tree.parser;
 
 import com.hazelcast.util.Preconditions;
-import com.sun.istack.internal.NotNull;
 
 import java.io.File;
 
@@ -21,7 +20,7 @@ public class FileReader {
 	 *
 	 * @throws NullPointerException when given {@code path} is null.
 	 */
-	public static File readFile(@NotNull String path) throws NullPointerException {
+	public static File readFile(String path) throws NullPointerException {
 		return new File(Preconditions.checkNotNull(path));
 	}
 
