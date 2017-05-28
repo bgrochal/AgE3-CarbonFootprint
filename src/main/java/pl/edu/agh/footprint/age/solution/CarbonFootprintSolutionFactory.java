@@ -87,28 +87,12 @@ public class CarbonFootprintSolutionFactory {
 		return solution.updateFitness(evaluator.evaluate(solution));
 	}
 
-
 	/**
-	 * <p>Returns an instance of the {@link CarbonFootprintSolution.SolutionTree} class being a newly-generated
-	 * footprint tree forming the solution of the Carbon Footprint problem.</p>
-	 *
-	 * <p>Note that all available {@link Action}s of each {@link Action#type} which could form a {@link
-	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode} must be defined by the {@code
-	 * actionsByType} map.</p>
+	 * Returns a {@link pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode root node} of a
+	 * newly-generated {@link CarbonFootprintSolution.SolutionTree solution (sub)tree}.
 	 */
-	private CarbonFootprintSolution.SolutionTree createSolutionTree(Map<String, List<Action>> actionsByType,
-																	boolean modifyParameters) {
-		final CarbonFootprintSolution.SolutionTreeNode rootNode =
-			createSolutionTreeNode(footprintTree.getTargetActionType(), actionsByType, modifyParameters);
-		return new CarbonFootprintSolution.SolutionTree(rootNode);
-	}
-
-	/**
-	 * Returns a {@link pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode node} of a
-	 * newly-generated {@link CarbonFootprintSolution.SolutionTree solution tree}.
-	 */
-	private CarbonFootprintSolution.SolutionTreeNode createSolutionTreeNode(String nodeActionType, Map<String, List<Action>> actionsByType,
-																			boolean modifyParameters) {
+	public CarbonFootprintSolution.SolutionTreeNode createSolutionTreeNode(String nodeActionType, Map<String, List<Action>> actionsByType,
+																		   boolean modifyParameters) {
 		List<Action> correspondingActions = actionsByType.get(nodeActionType);
 		Action originalAction = correspondingActions.get(randomGenerator.nextInt(correspondingActions.size()));
 		Action copiedAction = objectClonerService.deepClone(originalAction);
@@ -124,6 +108,22 @@ public class CarbonFootprintSolutionFactory {
 		copiedAction.getFootprintActionTypes().forEach(footprintActionType ->
 			treeNode.addChild(createSolutionTreeNode(footprintActionType, actionsByType, modifyParameters)));
 		return treeNode;
+	}
+
+
+	/**
+	 * <p>Returns an instance of the {@link CarbonFootprintSolution.SolutionTree} class being a newly-generated
+	 * footprint tree forming the solution of the Carbon Footprint problem.</p>
+	 *
+	 * <p>Note that all available {@link Action}s of each {@link Action#type} which could form a {@link
+	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode} must be defined by the {@code
+	 * actionsByType} map.</p>
+	 */
+	private CarbonFootprintSolution.SolutionTree createSolutionTree(Map<String, List<Action>> actionsByType,
+																	boolean modifyParameters) {
+		final CarbonFootprintSolution.SolutionTreeNode rootNode =
+			createSolutionTreeNode(footprintTree.getTargetActionType(), actionsByType, modifyParameters);
+		return new CarbonFootprintSolution.SolutionTree(rootNode);
 	}
 
 }

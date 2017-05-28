@@ -72,7 +72,7 @@ public class CarbonFootprintSolution implements Solution<CarbonFootprintSolution
 	 */
 	public static class SolutionTreeNode {
 
-		private Action action;
+		private final Action action;
 		private final List<SolutionTreeNode> children;
 
 
@@ -90,12 +90,12 @@ public class CarbonFootprintSolution implements Solution<CarbonFootprintSolution
 			children.add(childNode);
 		}
 
-		public Action getAction() {
-			return action;
+		public void removeChild(SolutionTreeNode childNode) {
+			children.remove(childNode);
 		}
 
-		public void setAction(Action action) {
-			this.action = action;
+		public Action getAction() {
+			return action;
 		}
 
 	}

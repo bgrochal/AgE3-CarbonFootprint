@@ -1,5 +1,6 @@
 package pl.edu.agh.footprint.age.util;
 
+import pl.edu.agh.footprint.age.solution.CarbonFootprintSolution;
 import pl.edu.agh.footprint.tree.model.Action;
 
 import java.util.List;
@@ -22,8 +23,22 @@ public class TreeUtil {
 	 * Returns a mapping between {@link Action#type Action.type}s and a list of {@link Action actions} containing this {@link
 	 * Action#type}.
 	 */
-	public static final Map<String, List<Action>> getActionsByType(List<Action> actions) {
+	public static Map<String, List<Action>> getActionsByType(List<Action> actions) {
 		return actions.stream().collect(Collectors.groupingBy(Action::getType));
 	}
 
+	/**
+	 * Replaces the footprint (sub)tree of the {@code solutionTree} rooted in the {@code previousNode} with the
+	 * (sub)tree rooted in the {@code newNode}.
+	 */
+	public static void replaceTreeNodes(CarbonFootprintSolution.SolutionTreeNode previousNode,
+										CarbonFootprintSolution.SolutionTreeNode newNode,
+										CarbonFootprintSolution.SolutionTree solutionTree) {
+		solutionTree.getAllPreOrder().stream()
+			.filter(treeNode -> treeNode.getChildren().contains(previousNode))
+			.forEach(treeNode -> {
+				treeNode.removeChild(previousNode);
+				treeNode.addChild(newNode);
+			});
+	}
 }
