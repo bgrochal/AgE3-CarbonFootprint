@@ -18,4 +18,172 @@
 	<!-- Property placeholder -->
 	<context:property-placeholder location="classpath:pl/edu/agh/footprint/age/carbon-footprint-config.properties"/>
 
+
+	<!-- Problem definition -->
+	<bean id="problemDefinition" class="pl.edu.agh.footprint.age.problem.CarbonFootprintProblem">
+		<constructor-arg name="filePath" value="${footprint.problem.input.file}"/>
+	</bean>
+	<bean id="methodsContainer" class="${footprint.problem.input.methods-container-class}"/>
+
+	<bean id="stopCondition" class="pl.edu.agh.age.compute.stream.TimedStopCondition">
+		<constructor-arg value="${footprint.problem.stop-condition-in-seconds}" type="long"/>
+	</bean>
+
+	<bean id="loggingInterval" class="java.time.Duration" factory-method="ofMillis">
+		<constructor-arg value="${footprint.problem.logging-interval-in-ms}"/>
+	</bean>
+
+
+	<!-- Problem-specific beans -->
+	<bean id="parameterFactory" class="pl.edu.agh.footprint.tree.factory.ParameterFactory"/>
+	<bean id="footprintTreeProvider" class="pl.edu.agh.footprint.tree.provider.FootprintTreeProvider">
+		<constructor-arg name="problemDefinition" ref="problemDefinition"/>
+		<constructor-arg name="methodsContainer" ref="methodsContainer"/>
+		<constructor-arg name="parameterFactory" ref="parameterFactory"/>
+	</bean>
+
+	<bean id="footprintTree" factory-bean="footprintTreeProvider" factory-method="getFootprintTree"/>
+	<bean id="availableActions" factory-bean="footprintTree" factory-method="getActions"/>
+
+	<bean id="objectCloner" class="com.rits.cloning.Cloner">
+		<property name="dumpClonedClasses" value="false"/>
+		<property name="cloningEnabled" value="true"/>
+	</bean>
+	<bean id="objectClonerService" class="pl.edu.agh.footprint.age.util.ObjectClonerService">
+		<constructor-arg name="objectCloner" ref="objectCloner"/>
+	</bean>
+
+
+	<!-- EMAS platform configuration related to the Carbon Footprint problem -->
+	<bean id="evaluatorCounter" class="pl.edu.agh.age.compute.stream.problem.EvaluatorCounter" factory-method="simpleCounter"/>
+	<bean id="solutionEvaluator" class="pl.edu.agh.footprint.age.evaluator.CarbonFootprintEvaluator">
+		<constructor-arg name="counter" ref="evaluatorCounter"/>
+		<constructor-arg name="methodsContainer" ref="methodsContainer"/>
+	</bean>
+	<bean id="populationEvaluator" class="${footprint.population.evaluator.class}">
+		<constructor-arg name="evaluator" ref="solutionEvaluator"/>
+		<constructor-arg name="improvement" value="#{ T(java.util.Optional).ofNullable(null) }"/>
+	</bean>
+
+	<bean id="solutionFactory" class="pl.edu.agh.footprint.age.solution.CarbonFootprintSolutionFactory">
+		<constructor-arg name="footprintTree" ref="footprintTree"/>
+		<constructor-arg name="evaluator" ref="solutionEvaluator"/>
+		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
+	</bean>
+
+	<bean id="populationGenerator" class="pl.edu.agh.footprint.age.population.CarbonFootprintPopulationGenerator">
+		<constructor-arg name="solutionFactory" ref="solutionFactory"/>
+		<constructor-arg name="agentsCount" value="${footprint.population.size}"/>
+		<constructor-arg name="initialEnergy" value="${footprint.population.initial-energy}"/>
+	</bean>
+
+	<bean id="recombinationManager" class="${footprint.recombination.class}">
+		<constructor-arg name="solutionFactory" ref="solutionFactory"/>
+	</bean>
+
+	<bean id="parameterMutationManager" class="${footprint.mutation.parameter.class}">
+		<constructor-arg name="mutationProbability" value="${footprint.mutation.parameter.probability}"/>
+		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
+	</bean>
+	<bean id="nodeMutationManager" class="${footprint.mutation.node.class}">
+		<constructor-arg name="mutationProbability" value="${footprint.mutation.node.probability}"/>
+		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
+		<constructor-arg name="solutionFactory" ref="solutionFactory"/>
+		<constructor-arg name="actions" ref="availableActions"/>
+	</bean>
+	<bean id="combinedMutationManager" class="${footprint.mutation.combined.class}">
+		<constructor-arg name="mutationProbability" value="${footprint.mutation.combined.probability}"/>
+		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
+		<constructor-arg name="parameterMutationProbability" value="${footprint.mutation.combined.parameter_mutation_probability}"/>
+		<constructor-arg name="nodeMutationProbability" value="${footprint.mutation.combined.node_mutation_probability}"/>
+		<constructor-arg name="parameterMutation" ref="parameterMutationManager"/>
+		<constructor-arg name="nodeMutation" ref="nodeMutationManager"/>
+	</bean>
+
+
+	<!-- Problem-independent EMAS platform configuration -->
+	<bean id="migrationParameters" class="pl.edu.agh.age.compute.stream.emas.migration.MigrationParameters">
+		<constructor-arg name="stepInterval" value="${footprint.migration.steps-interval}"/>
+		<constructor-arg name="partToMigrate" value="${footprint.migration.part-to-migrate}"/>
+		<constructor-arg name="migrateBestAgentsOnly" value="${footprint.migration.migrate-best-only}"/>
+	</bean>
+
+	<bean id="reproductionPredicate" class="${footprint.reproduction.predicate.class}" factory-method="${footprint.reproduction.predicate.method}">
+		<constructor-arg value="${footprint.reproduction.predicate.energy-threshold}"/>
+	</bean>
+
+	<bean id="deathPredicate" class="${footprint.death.predicate.class}" factory-method="${footprint.death.predicate.method}">
+		<constructor-arg name="energyThreshold" value="${footprint.death.energy-threshold}"/>
+	</bean>
+
+	<bean id="fightAgentComparator" class="${footprint.fight.comparator.class}" factory-method="${footprint.fight.comparator.method}"/>
+
+	<bean id="sexualReproductionEnergyTransfer" class="${footprint.transfer.sexual.class}" factory-method="${footprint.transfer.sexual.method}">
+		<constructor-arg name="proportion" value="${footprint.transfer.sexual.proportion}"/>
+		<constructor-arg name="minimumAgentEnergy" value="${footprint.death.energy-threshold}"/>
+	</bean>
+
+	<bean id="asexualReproductionEnergyTransfer" class="${footprint.transfer.asexual.class}" factory-method="${footprint.transfer.asexual.method}">
+		<constructor-arg name="proportion" value="${footprint.transfer.asexual.proportion}"/>
+		<constructor-arg name="minimumAgentEnergy" value="${footprint.death.energy-threshold}"/>
+	</bean>
+
+	<bean id="fightEnergyTransfer" class="${footprint.transfer.fight.class}" factory-method="${footprint.transfer.fight.method}">
+		<constructor-arg name="transferredEnergy" value="${footprint.transfer.fight.transferred-energy}"/>
+		<constructor-arg name="minimumAgentEnergy" value="${footprint.death.energy-threshold}"/>
+	</bean>
+
+
+	<bean id="agentComparator" class="${footprint.agents.comparator.class}" factory-method="${footprint.agents.comparator.method}"/>
+	<bean id="agentsRegistry" class="pl.edu.agh.age.compute.stream.emas.EmasBestAgentsRegistry">
+		<constructor-arg name="agentComparator" ref="agentComparator"/>
+	</bean>
+
+	<bean id="loggingParameters" class="pl.edu.agh.age.compute.stream.logging.LoggingParameters">
+		<constructor-arg name="problemDefinition" ref="problemDefinition"/>
+		<constructor-arg name="loggingInterval" ref="loggingInterval"/>
+	</bean>
+	<bean id="loggingService" class="pl.edu.agh.age.compute.stream.logging.DefaultLoggingService">
+		<constructor-arg name="parameters" ref="loggingParameters"/>
+		<constructor-arg name="evaluatorCounter" ref="evaluatorCounter"/>
+		<constructor-arg name="agentsRegistry" ref="agentsRegistry"/>
+	</bean>
+
+	<bean id="before-step-analyzer" class="pl.edu.agh.age.compute.stream.BeforeStepAction" factory-method="simpleMerge"/>
+	<bean id="after-step-analyzer" class="pl.edu.agh.age.compute.stream.example.SampleAfterStepActionWithLogging"/>
+
+	<bean id="stepFunction" class="pl.edu.agh.age.compute.stream.emas.EmasStep">
+		<constructor-arg name="fightAgentComparator" ref="fightAgentComparator"/>
+		<constructor-arg name="fightEnergyTransfer" ref="fightEnergyTransfer"/>
+		<constructor-arg name="recombination" ref="recombinationManager"/>
+		<constructor-arg name="mutation" ref="combinedMutationManager"/>
+		<constructor-arg name="populationEvaluator" ref="populationEvaluator"/>
+		<constructor-arg name="deathPredicate" ref="deathPredicate"/>
+		<constructor-arg name="reproductionPredicate" ref="reproductionPredicate"/>
+		<constructor-arg name="sexualReproductionTransfer" ref="sexualReproductionEnergyTransfer"/>
+		<constructor-arg name="asexualReproductionTransfer" ref="asexualReproductionEnergyTransfer"/>
+		<constructor-arg name="agentComparator" ref="agentComparator"/>
+		<constructor-arg name="migrationParameters" ref="migrationParameters"/>
+	</bean>
+
+	<bean id="workplaceGenerator" class="pl.edu.agh.age.compute.stream.configuration.WorkplaceConfigurationGenerator">
+		<constructor-arg name="workplacesCount" value="${footprint.migration.workplaces.count}"/>
+		<constructor-arg name="generator" ref="populationGenerator"/>
+		<constructor-arg name="step" ref="stepFunction"/>
+		<constructor-arg name="afterStep" ref="after-step-analyzer"/>
+		<constructor-arg name="beforeStep" ref="before-step-analyzer"/>
+	</bean>
+
+	<bean id="configuration" class="pl.edu.agh.age.compute.stream.configuration.Configuration">
+		<constructor-arg name="workplaceConfigurationGenerator" ref="workplaceGenerator"/>
+		<constructor-arg name="stopCondition" ref="stopCondition"/>
+		<constructor-arg name="loggingService" ref="loggingService"/>
+		<constructor-arg name="topology">
+			<bean class="${footprint.migration.topology}"/>
+		</constructor-arg>
+	</bean>
+
+	<!-- Note that this bean must be named as "runnable" (because of the AgE platform's requirement). -->
+	<bean id="runnable" class="pl.edu.agh.age.compute.stream.StreamAgents"/>
+
 </beans>
