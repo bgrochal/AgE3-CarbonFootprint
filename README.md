@@ -26,7 +26,7 @@ not deployed yet. In order to run this repository, follow these steps:
     ```
  5. Build and run the code included in this repository by executing:
     ```
-    gradle node -PappArgs="['pl/edu/agh/age/footprint/carbon-footprint-config.xml,pl/edu/agh/age/footprint/carbon-footprint.properties']"
+    gradle node -PappArgs="['pl/edu/agh/footprint/age/carbon-footprint-config.xml,pl/edu/agh/footprint/age/carbon-footprint-config.properties']"
     ```
 
 ## Links
