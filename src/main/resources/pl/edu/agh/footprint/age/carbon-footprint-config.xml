@@ -156,7 +156,7 @@
 		<constructor-arg name="fightAgentComparator" ref="fightAgentComparator"/>
 		<constructor-arg name="fightEnergyTransfer" ref="fightEnergyTransfer"/>
 		<constructor-arg name="recombination" ref="recombinationManager"/>
-		<constructor-arg name="mutation" ref="combinedMutationManager"/>
+		<constructor-arg name="mutation" ref="parameterMutationManager"/>
 		<constructor-arg name="populationEvaluator" ref="populationEvaluator"/>
 		<constructor-arg name="deathPredicate" ref="deathPredicate"/>
 		<constructor-arg name="reproductionPredicate" ref="reproductionPredicate"/>
