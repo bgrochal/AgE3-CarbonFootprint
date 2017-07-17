@@ -50,7 +50,6 @@ public class MutationTestMethodsContainer implements MethodsContainer {
 
 		return Collections.singletonList(
 			new ContainerMethodAttribute("OverallEmissionForExtraction", combined));
-
 	}
 
 	public List<ContainerMethodAttribute> getOverallEmissionForSecondMethodOfExtraction(List<ContainerMethodAttribute> footprintValues,
