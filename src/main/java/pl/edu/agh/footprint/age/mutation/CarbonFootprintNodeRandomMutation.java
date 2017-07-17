@@ -6,6 +6,7 @@ import pl.edu.agh.footprint.age.util.ObjectClonerService;
 import pl.edu.agh.footprint.age.util.TreeUtil;
 import pl.edu.agh.footprint.tree.model.Action;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,7 +102,7 @@ public class CarbonFootprintNodeRandomMutation extends CarbonFootprintAbstractMu
 		Action copiedAction = objectClonerService.deepClone(nodeAction);
 		CarbonFootprintSolution.SolutionTreeNode newTreeNode = new CarbonFootprintSolution.SolutionTreeNode(copiedAction);
 		copiedAction.getFootprintActionTypes().forEach(footprintActionType ->
-			newTreeNode.addChild(solutionFactory.createSolutionTreeNode(footprintActionType, actionsByType, true)));
+			newTreeNode.addChild(solutionFactory.createSolutionTreeNode(footprintActionType, actionsByType, new HashMap<>(), true)));
 
 		return newTreeNode;
 	}

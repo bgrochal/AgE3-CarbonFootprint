@@ -9,6 +9,7 @@ import pl.edu.agh.footprint.tree.model.FootprintTree;
 import pl.edu.agh.footprint.tree.model.parameter.ConfigurableParameter;
 import pl.edu.agh.footprint.tree.model.parameter.Parameter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -90,9 +91,17 @@ public class CarbonFootprintSolutionFactory {
 	/**
 	 * Returns a {@link pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode root node} of a
 	 * newly-generated {@link CarbonFootprintSolution.SolutionTree solution (sub)tree}.
+	 *
+	 * The {@code createdNodesByType} parameter contains mappings between the types of all nodes created during the
+	 * recursive call and these nodes. Keeping this mapping is necessary to prevent from creating the same node (i.e. a
+	 * node with given {@link Action#type}) more than once in the tree.
 	 */
 	public CarbonFootprintSolution.SolutionTreeNode createSolutionTreeNode(String nodeActionType, Map<String, List<Action>> actionsByType,
-																		   boolean modifyParameters) {
+																		   Map<String, CarbonFootprintSolution.SolutionTreeNode> createdNodesByType, boolean modifyParameters) {
+		if (createdNodesByType.containsKey(nodeActionType)) {
+			return createdNodesByType.get(nodeActionType);
+		}
+
 		List<Action> correspondingActions = actionsByType.get(nodeActionType);
 		Action originalAction = correspondingActions.get(randomGenerator.nextInt(correspondingActions.size()));
 		Action copiedAction = objectClonerService.deepClone(originalAction);
@@ -105,8 +114,10 @@ public class CarbonFootprintSolutionFactory {
 		}
 
 		CarbonFootprintSolution.SolutionTreeNode treeNode = new CarbonFootprintSolution.SolutionTreeNode(copiedAction);
+		createdNodesByType.put(nodeActionType, treeNode);
+
 		copiedAction.getFootprintActionTypes().forEach(footprintActionType ->
-			treeNode.addChild(createSolutionTreeNode(footprintActionType, actionsByType, modifyParameters)));
+			treeNode.addChild(createSolutionTreeNode(footprintActionType, actionsByType, createdNodesByType, modifyParameters)));
 		return treeNode;
 	}
 
@@ -122,7 +133,7 @@ public class CarbonFootprintSolutionFactory {
 	private CarbonFootprintSolution.SolutionTree createSolutionTree(Map<String, List<Action>> actionsByType,
 																	boolean modifyParameters) {
 		final CarbonFootprintSolution.SolutionTreeNode rootNode =
-			createSolutionTreeNode(footprintTree.getTargetActionType(), actionsByType, modifyParameters);
+			createSolutionTreeNode(footprintTree.getTargetActionType(), actionsByType, new HashMap<>(), modifyParameters);
 		return new CarbonFootprintSolution.SolutionTree(rootNode);
 	}
 
