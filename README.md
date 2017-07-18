@@ -1,5 +1,4 @@
 # AgE 3 Carbon Footprint
-
 This repository contains an implementation of the [AgE3](https://gitlab.com/age-agh/age3)-compatible solver for 
 optimizing Carbon Footprint. Technology stack: Java, Spring framework.
 
@@ -9,7 +8,6 @@ You need to have the following tools installed and configured:
  - Gradle
 
 ## Installation and Commissioning
-
 This repository is compatible with the `0.5` version of the [AgE3](https://gitlab.com/age-agh/age3) project, which is
 not deployed yet. In order to run this repository, follow these steps:
  1. Clone the latest version of the [AgE3 develop branch](https://gitlab.com/age-agh/age3/tree/develop).
@@ -29,7 +27,17 @@ not deployed yet. In order to run this repository, follow these steps:
     gradle node -PappArgs="['pl/edu/agh/footprint/age/carbon-footprint-config.xml,pl/edu/agh/footprint/age/carbon-footprint-config.properties']"
     ```
 
-## Links
+## Visualisation of results
+There is a `python3` script included in the `src/main/resources/visualisation` directory, which analyses the log files
+produced by the Carbon Footprint solver. In order to run this script, please install all dependencies by typing:
+```
+pip3 install -r requirements.txt
+```
+in the directory mentioned above, and then run the script as follows:
+```
+python3 visualisation.py
+```
 
+## Links
 * [AgE 3 reference](https://www.age.agh.edu.pl/)
 * [AgE 3 Repository on GitLab](https://gitlab.com/age-agh/age3)
