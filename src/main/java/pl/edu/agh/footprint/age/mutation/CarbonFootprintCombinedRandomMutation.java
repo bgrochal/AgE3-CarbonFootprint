@@ -11,10 +11,9 @@ import pl.edu.agh.footprint.age.util.ObjectClonerService;
  * kind of mutation should be applied (according to given  probabilities: {@link #parameterMutationProbability} and
  * {@link #nodeMutationProbability}) and performs a mutation of the selected type.</p>
  *
- * <p>Note that a value of the {@link #mutationProbability} parameter is not used to decide which kind of mutation will
- * be used, but it is used when applying a concrete mutation strategy. Note also that it is required to satisfy the
- * following condition: {@link #parameterMutationProbability} + {@link #nodeMutationProbability} = 1. This condition
- * should be naturally modified when the new mutation strategy is added.</p>
+ * <p>Note that it is required to satisfy the following condition: {@link #parameterMutationProbability} +
+ * {@link #nodeMutationProbability} = 1. This condition should be naturally modified when the new mutation strategy is
+ * added.</p>
  *
  * @author Bartłomiej Grochal
  */
@@ -35,11 +34,11 @@ public class CarbonFootprintCombinedRandomMutation extends CarbonFootprintAbstra
 	 * @param parameterMutation            instance of the {@link CarbonFootprintParameterRandomMutation} operator.
 	 * @param nodeMutation                 instance of the {@link CarbonFootprintNodeRandomMutation} operator.
 	 */
-	CarbonFootprintCombinedRandomMutation(final double mutationProbability, final ObjectClonerService objectClonerService,
+	CarbonFootprintCombinedRandomMutation(final ObjectClonerService objectClonerService,
 										  final double parameterMutationProbability, final double nodeMutationProbability,
 										  final CarbonFootprintParameterRandomMutation parameterMutation,
 										  final CarbonFootprintNodeRandomMutation nodeMutation) {
-		super(mutationProbability, objectClonerService);
+		super(objectClonerService);
 		Preconditions.checkArgument(parameterMutationProbability + nodeMutationProbability == 1.0);
 
 		this.parameterMutationProbability = parameterMutationProbability;

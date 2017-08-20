@@ -62,7 +62,7 @@
 	</bean>
 	<bean id="populationEvaluator" class="${footprint.population.evaluator.class}">
 		<constructor-arg name="evaluator" ref="solutionEvaluator"/>
-		<constructor-arg name="improvement" value="#{ T(java.util.Optional).ofNullable(null) }"/>
+		<constructor-arg name="improvement" value="#{ T(java.util.Optional).empty() }"/>
 	</bean>
 
 	<bean id="solutionFactory" class="pl.edu.agh.footprint.age.solution.CarbonFootprintSolutionFactory">
@@ -92,7 +92,6 @@
 		<constructor-arg name="actions" ref="availableActions"/>
 	</bean>
 	<bean id="combinedMutationManager" class="${footprint.mutation.combined.class}">
-		<constructor-arg name="mutationProbability" value="${footprint.mutation.combined.probability}"/>
 		<constructor-arg name="objectClonerService" ref="objectClonerService"/>
 		<constructor-arg name="parameterMutationProbability" value="${footprint.mutation.combined.parameter_mutation_probability}"/>
 		<constructor-arg name="nodeMutationProbability" value="${footprint.mutation.combined.node_mutation_probability}"/>

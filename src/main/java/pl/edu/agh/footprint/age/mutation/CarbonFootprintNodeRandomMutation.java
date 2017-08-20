@@ -32,17 +32,24 @@ import java.util.Map;
  */
 public class CarbonFootprintNodeRandomMutation extends CarbonFootprintAbstractMutation {
 
+	private final double mutationProbability;
+
 	private final CarbonFootprintSolutionFactory solutionFactory;
 	private final Map<String, List<Action>> actionsByType;
 
 
 	/**
-	 * @param actions       list of all {@link Action}s defined in the XML footprint tree (parsed as an instance of the
-	 *                      {@link pl.edu.agh.footprint.tree.model.FootprintTree FootprintTree} class).
+	 * @param mutationProbability	floating-point number belonging to the [0, 1) interval defining the
+	 *								probability of performing mutation (in other words, this parameter defines
+	 *								the average percentage of genes which will be selected to mutate).
+	 * @param actions				list of all {@link Action}s defined in the XML footprint tree (parsed as an instance
+	 *                              of the {@link pl.edu.agh.footprint.tree.model.FootprintTree FootprintTree} class).
 	 */
 	public CarbonFootprintNodeRandomMutation(final double mutationProbability, final ObjectClonerService objectClonerService,
 											 final CarbonFootprintSolutionFactory solutionFactory, final List<Action> actions) {
-		super(mutationProbability, objectClonerService);
+		super(objectClonerService);
+
+		this.mutationProbability = mutationProbability;
 		this.solutionFactory = solutionFactory;
 
 		actionsByType = TreeUtil.getActionsByType(actions);

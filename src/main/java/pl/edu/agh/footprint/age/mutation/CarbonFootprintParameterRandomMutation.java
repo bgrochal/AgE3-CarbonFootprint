@@ -25,8 +25,18 @@ import java.util.List;
  */
 public class CarbonFootprintParameterRandomMutation extends CarbonFootprintAbstractMutation {
 
+	private final double mutationProbability;
+
+
+	/**
+	 * @param mutationProbability floating-point number belonging to the [0, 1) interval defining the probability of
+	 *                            performing mutation (in other words, this parameter defines the average percentage of
+	 *                            genes which will be selected to mutate).
+	 */
 	public CarbonFootprintParameterRandomMutation(final double mutationProbability, final ObjectClonerService objectClonerService) {
-		super(mutationProbability, objectClonerService);
+		super(objectClonerService);
+
+		this.mutationProbability = mutationProbability;
 	}
 
 
