@@ -13,9 +13,9 @@ import java.util.stream.Stream;
 
 /**
  * This class represents the recombination algorithm, which produces one offspring {@link CarbonFootprintSolution
- * solution} from two parent {@link CarbonFootprintSolution solutions}. The algorithm of recombination breaks down
- * parent trees and builds a new offspring tree, which nodes are selected randomly from corresponding nodes belonging to
- * its parents. Note that - in particular - the offspring tree may be the same as one of parent trees.
+ * solution} from two parent {@link CarbonFootprintSolution solutions}. The algorithm of recombination splits up parent
+ * trees and builds a new offspring tree, which nodes are selected randomly from corresponding nodes belonging to its
+ * parents. Note that - in particular - the offspring tree may be the same as one of parent trees.
  *
  * @author Bartłomiej Grochal
  */
@@ -36,7 +36,7 @@ public class CarbonFootprintRandomTreeRecombination implements Recombination<Car
 
 	/**
 	 * Returns a new offspring {@link CarbonFootprintSolution solution} combined from two parent {@link
-	 * CarbonFootprintSolution solution}s by breaking down the parent {@link
+	 * CarbonFootprintSolution solution}s by splitting up the parent {@link
 	 * pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTree solution tree}s and creating a new one by
 	 * picking one {@link pl.edu.agh.footprint.age.solution.CarbonFootprintSolution.SolutionTreeNode solution tree node}
 	 * randomly for each pair of corresponding nodes.

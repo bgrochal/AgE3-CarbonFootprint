@@ -105,9 +105,7 @@ public class CarbonFootprintSolution implements Solution<CarbonFootprintSolution
 	 * problem.</p>
 	 * <p>
 	 * <p>The solution tree consists of {@link SolutionTreeNode nodes}. If there is more than one {@link Action} of
-	 * given {@link Action#type type}, the solution tree contains only one of these {@link Action actions}. Moreover,
-	 * the solution tree must contain exactly one {@link Action} of every defined {@link Action#type type} to form the
-	 * correct solution for the Carbon Footprint problem.</p>
+	 * given {@link Action#type type}, the solution tree contains only one of these {@link Action actions}.</p>
 	 */
 	public static class SolutionTree {
 
