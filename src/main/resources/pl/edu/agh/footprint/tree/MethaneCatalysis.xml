@@ -42,7 +42,7 @@
 			</Footprints>
 		</Action>
 
-		<Action title="Footprint for emission of as a result of combustion" type="FootprintEmissionCombustion" method="getFootprintEmissionCombustion">
+		<Action title="Footprint for emission of combustion results" type="FootprintEmissionCombustion" method="getFootprintEmissionCombustion">
 			<Footprints>
 				<Footprint>PercentageCo2Emissions</Footprint>
 				<Footprint>Co2ProducedByCombustion</Footprint>
